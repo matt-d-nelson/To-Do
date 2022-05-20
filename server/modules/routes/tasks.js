@@ -6,7 +6,13 @@ const router = express.Router();
 
 router.get('/', (req, res) => {
     console.log('/tasks GET');
-    res.send('ribbit');
+    let queryString = `SELECT * FROM tasks;`;
+    pool.query(queryString).then((result) => {
+        res.send(result.rows);
+    }).catch((err) => {
+        console.log(err);
+        res.sendStatus(500);
+    })
 })
 
 module.exports = router;
