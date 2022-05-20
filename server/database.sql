@@ -2,9 +2,9 @@ CREATE TABLE tasks (
 	"id" serial PRIMARY KEY,
 	"title" varchar(40),
 	"description" varchar(280),
-	"completed" boolean DEFAULT false,
 	"due_date" date, --format YYYY-MM-DD
-	"priority" integer
+	"priority" integer,
+    "completed" boolean DEFAULT false
 );
 
 DROP TABLE tasks;

@@ -10,6 +10,28 @@
     <link rel="stylesheet" href="styles/style.css">
 </head>
 <body>
-    
+    <div id="inputs">
+        <label>Name <input type="text" placeholder="title" id="titleIn"></label>
+        <label>Description <input type="text" placeholder="description" id="descriptionIn"></label>
+        <label>Due Date <input type="date" id="due_dateIn"></label>
+        <label>Priority <select id="priorityIn">
+            <option>low</option>
+            <option>medium</option>
+            <option>high</option>
+        </select></label>
+    </div>
+    <div id="outputs">
+        <table>
+            <thead>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Due Date</th>
+                <th>Priority</th>
+                <th>Completed</th>
+            </thead>
+            <tbody id="tasksOut">
+            </tbody>
+        </table>
+    </div>
 </body>
 </html>
