@@ -6,9 +6,12 @@ function onReady() {
     $('#addTask').on('click', addTask);
     $('#tasksOut').on('click', '.deleteButton', deleteTask);
     $('#tasksOut').on('click', '.completeButton', completeTask);
+    $('#sortButton').on('click', getTasks);
 
     getTasks();
 }
+
+//---------------------SERVER REQUESTS---------------------//
 
 // POST
 function addTask() {
@@ -36,9 +39,10 @@ function addTask() {
 
 // GET
 function getTasks() {
+    let sortBy = $('#sortByIn').val();
     $.ajax({
         method: 'GET',
-        url: '/tasks'
+        url: `/tasks?sortBy=${sortBy}`
     }).then(function(response) {
         console.log('back from GET', response);
         displayTasks(response);
@@ -82,6 +86,8 @@ function deleteTask() {
         alert('error deleting task');
     })
 }
+
+//---------------------VARIOUS---------------------//
 
 function displayTasks(arrayToDisplay) {
     el = $('#tasksOut');
