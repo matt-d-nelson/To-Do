@@ -12,3 +12,5 @@ DROP TABLE tasks;
 INSERT INTO tasks (title, description, due_date, priority) VALUES ('get groceries', 'apples, oranges, tuna, bread, starfruit', '2022-05-23', 2);
 
 SELECT * FROM tasks;
+
+DELETE FROM tasks WHERE id=1;
