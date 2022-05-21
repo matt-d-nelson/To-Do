@@ -1,6 +1,7 @@
 // requires
 const express = require('express');
 const pool = require('../pool');
+const format = require('pg-format');
 
 const router = express.Router();
 
@@ -26,7 +27,16 @@ router.post('/', (req, res) => {
 // GET
 router.get('/', (req, res) => {
     console.log('/tasks GET');
-    let queryString = `SELECT * FROM tasks ORDER BY id ASC;`;
+    let sortBy = req.query.sortBy;
+    let queryString = format(`SELECT * FROM tasks ORDER BY %I`,sortBy);
+    if (sortBy === 'id') {
+        queryString += ' ASC;'
+    } else if (sortBy === 'priority') {
+        queryString += ' DESC;'
+    } else {
+        queryString += ';'
+    }
+    console.log(queryString);
     pool.query(queryString).then((result) => {
         res.send(result.rows);
     }).catch((err) => {
