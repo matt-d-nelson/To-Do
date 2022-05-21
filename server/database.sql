@@ -13,4 +13,6 @@ INSERT INTO tasks (title, description, due_date, priority) VALUES ('get grocerie
 
 SELECT * FROM tasks;
 
-DELETE FROM tasks WHERE id=1;
+DELETE FROM tasks WHERE id = 1;
+
+UPDATE tasks SET completed = NOT completed WHERE id = 12;

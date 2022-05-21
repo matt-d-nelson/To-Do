@@ -5,6 +5,7 @@ function onReady() {
 
     $('#addTask').on('click', addTask);
     $('#tasksOut').on('click', '.deleteButton', deleteTask);
+    $('#tasksOut').on('click', '.completeButton', completeTask);
 
     getTasks();
 }
@@ -46,6 +47,21 @@ function getTasks() {
     });
 }
 
+// PUT
+function completeTask() {
+    let completedId = $(this).closest('tr').data('id');
+    $.ajax({
+        method: 'PUT',
+        url: `/tasks?id=${completedId}`
+    }).then(function(response) {
+        console.log('back from PUT', response);
+        getTasks();
+    }).catch(function(err) {
+        console.log(err);
+        alert('error completing task');
+    })
+}
+
 // DELETE
 function deleteTask() {
     let parEl = $(this).closest('tr');
@@ -71,6 +87,8 @@ function displayTasks(arrayToDisplay) {
     el = $('#tasksOut');
     el.empty();
     for(let i = 0; i < arrayToDisplay.length; i++) {
+        //convert priority from int to string
+        arrayToDisplay[i].priority = convertPriority(arrayToDisplay[i].priority);
         el.append(`
             <tr data-id="${arrayToDisplay[i].id}">
                 <td>${arrayToDisplay[i].title}</td>
@@ -79,8 +97,28 @@ function displayTasks(arrayToDisplay) {
                 <td>${arrayToDisplay[i].priority}</td>
                 <td>${arrayToDisplay[i].completed}</td>
                 <td><button class="deleteButton">Delete</button></td>
-                <td><button class="completeButton">Complete</button></td>
+                <td><button class="completeButton">${checkComplete(arrayToDisplay[i].completed)}</button></td>
             </tr>
         `)
     }
+}
+
+function convertPriority(priorityIn) {
+    switch (priorityIn) {
+        case 1:
+            return 'low';
+        case 2:
+            return 'medium';
+        case 3: 
+            return 'high';
+        default:
+            return;
+    }
+}
+
+function checkComplete(completedIn) {
+    if (!completedIn) {
+        return 'Complete';
+    }
+    return 'Incomplete';
 }

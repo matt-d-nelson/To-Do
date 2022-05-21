@@ -26,9 +26,22 @@ router.post('/', (req, res) => {
 // GET
 router.get('/', (req, res) => {
     console.log('/tasks GET');
-    let queryString = `SELECT * FROM tasks;`;
+    let queryString = `SELECT * FROM tasks ORDER BY id ASC;`;
     pool.query(queryString).then((result) => {
         res.send(result.rows);
+    }).catch((err) => {
+        console.log(err);
+        res.sendStatus(500);
+    })
+})
+
+// UPDATE
+router.put('/', (req,res) => {
+    console.log('/tasks PUT');
+    let taskId = [req.query.id];
+    let queryString = `UPDATE tasks SET completed = NOT completed WHERE id = $1;`;
+    pool.query(queryString,taskId).then((result) => {
+        res.sendStatus(200);
     }).catch((err) => {
         console.log(err);
         res.sendStatus(500);
@@ -38,9 +51,9 @@ router.get('/', (req, res) => {
 // DELETE
 router.delete('/', (req, res) => {
     console.log('/tasks DELETE');
-    let idToDelete = [req.query.id];
+    let taskId = [req.query.id];
     let queryString = `DELETE FROM tasks WHERE id=$1;`
-    pool.query(queryString,idToDelete).then((result) => {
+    pool.query(queryString,taskId).then((result) => {
         res.sendStatus(200);
     }).catch((err) => {
         console.log(err);
