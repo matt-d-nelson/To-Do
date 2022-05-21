@@ -14,9 +14,21 @@ function addTask() {
         title: $('#titleIn').val(),
         description: $('#descriptionIn').val(),
         due_date: $('#due_dateIn').val(),
-        priority: $('priorityIn').val()
+        priority: $('#priorityIn').val()
     }
     console.log('in addTask', taskToAdd);
+
+    $.ajax({
+        method: 'POST',
+        url: '/tasks',
+        data: taskToAdd
+    }).then(function(response) {
+        console.log('back from POST', response);
+        getTasks();
+    }).catch(function(err) {
+        console.log(err);
+        alert('error adding task');
+    })
 }
 
 // GET

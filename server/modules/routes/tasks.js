@@ -4,6 +4,26 @@ const pool = require('../pool');
 
 const router = express.Router();
 
+// POST 
+router.post('/', (req, res) => {
+    console.log('/tasks POST', req.body);
+    let taskData = [
+        req.body.title,
+        req.body.description,
+        req.body.due_date,
+        req.body.priority
+    ];
+    let queryString = `INSERT INTO tasks (title, description, due_date, priority) VALUES ($1, $2, $3, $4);`;
+    pool.query(queryString,taskData).then((result) => {
+        res.sendStatus(201);
+    }).catch((err) => {
+        console.log(err);
+        res.sendStatus(500);
+    })
+    
+})
+
+// GET
 router.get('/', (req, res) => {
     console.log('/tasks GET');
     let queryString = `SELECT * FROM tasks;`;
