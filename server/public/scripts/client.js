@@ -2,9 +2,24 @@ $(document).ready(onReady);
 
 function onReady() {
     console.log('JQ');
+
+    $('#addTask').on('click', addTask);
+
     getTasks();
 }
 
+// POST
+function addTask() {
+    let taskToAdd = {
+        title: $('#titleIn').val(),
+        description: $('#descriptionIn').val(),
+        due_date: $('#due_dateIn').val(),
+        priority: $('priorityIn').val()
+    }
+    console.log('in addTask', taskToAdd);
+}
+
+// GET
 function getTasks() {
     $.ajax({
         method: 'GET',
@@ -25,7 +40,7 @@ function displayTasks(arrayToDisplay) {
             <tr>
                 <td>${arrayToDisplay[i].title}</td>
                 <td>${arrayToDisplay[i].description}</td>
-                <td>${arrayToDisplay[i].due_date}</td>
+                <td>${arrayToDisplay[i].due_date.slice(0,10)}</td>
                 <td>${arrayToDisplay[i].priority}</td>
                 <td>${arrayToDisplay[i].completed}</td>
             </tr>
