@@ -45,7 +45,7 @@ router.get('/', (req, res) => {
     })
 })
 
-// PUT
+// PUT COMPLETE TASK
 router.put('/', (req,res) => {
     console.log('/tasks PUT', req.body);
     let taskData = [req.body.time_completed,req.body.id];
@@ -56,6 +56,25 @@ router.put('/', (req,res) => {
         taskData.shift();
     }
     pool.query(queryString,taskData).then((result) => {
+        res.sendStatus(200);
+    }).catch((err) => {
+        console.log(err);
+        res.sendStatus(500);
+    })
+})
+
+// PUT UPDATE TASK
+router.put('/update', (req,res) => {
+    console.log('/tasks/update PUT', req.body);
+    let updatedData = [
+        req.body.title,
+        req.body.description,
+        req.body.due_date,
+        req.body.priority,
+        req.body.id
+    ];
+    let queryString = `UPDATE tasks SET title = $1, description = $2, due_date = $3, priority = $4 WHERE id = $5;`;
+    pool.query(queryString,updatedData).then((result) => {
         res.sendStatus(200);
     }).catch((err) => {
         console.log(err);

@@ -9,6 +9,9 @@ function onReady() {
     $('#deleteModal').on('click', '.deleteButton', deleteTask);
     // complete task
     $('#tasksOut').on('click', '.completeButton', completeTask);
+    // edit task
+    $('#tasksOut').on('click', '.editButton', editWindow);
+    $('#editModal').on('click', '.editButton', editTask);
     // sort task table
     $('#sortButton').on('click', getTasks);
 
@@ -55,13 +58,14 @@ function getTasks() {
     });
 }
 
-// PUT
+// PUT COMPLETE
 function completeTask() {
     let parEl = $(this).closest('tr');
     let completedTask = {
         id: parEl.data('id'),
     }
-    if (parEl.find('td:eq(4)').text() == 'false') {
+    console.log();
+    if (parEl.find('.completedTask').text() == 'false') {
         let timeNow = new Date();
         completedTask.time_completed = `${timeNow.getFullYear()}-${timeNow.getMonth()}-${timeNow.getDate()} ${timeNow.getHours()}:${timeNow.getMinutes()}:${timeNow.getSeconds()}`;
     } else {
@@ -78,6 +82,29 @@ function completeTask() {
     }).catch(function(err) {
         console.log(err);
         alert('error completing task');
+    })
+}
+
+// PUT EDIT TASK
+function editTask() {
+    let updatedTask = {
+        id: $(this).data('id'),
+        title: $('#editTitle').val(),
+        description: $('#editDescription').val(),
+        due_date: $('#editDate').val(),
+        priority: $('#editPriority').val()
+    };
+    console.log('in editTask', updatedTask);
+    $.ajax({
+        method: 'PUT',
+        url: `/tasks/update`,
+        data: updatedTask
+    }).then(function(response) {
+        console.log('back from PUT', response);
+        getTasks();
+    }).catch(function(err) {
+        console.log(err);
+        alert('error updating task');
     })
 }
 
@@ -108,19 +135,20 @@ function displayTasks(arrayToDisplay) {
         // convert priority from int to string
         arrayToDisplay[i].priority = convertPriority(arrayToDisplay[i].priority);
         // format due_date 
-        arrayToDisplay[i].due_date = formatDueDate(arrayToDisplay[i].due_date);
+        arrayToDisplay[i].due_date = formatDueDateForDom(arrayToDisplay[i].due_date);
         // format time_completed
         arrayToDisplay[i].time_completed = formatTimeCompleted(arrayToDisplay[i].time_completed);
         el.append(`
             <tr data-id="${arrayToDisplay[i].id}">
-                <td>${arrayToDisplay[i].title}</td>
-                <td>${arrayToDisplay[i].description}</td>
-                <td>${arrayToDisplay[i].due_date.slice(0,10)}</td>
-                <td>${arrayToDisplay[i].priority}</td>
-                <td>${arrayToDisplay[i].completed}</td>
+                <td class="titleTask">${arrayToDisplay[i].title}</td>
+                <td class="descriptionTask">${arrayToDisplay[i].description}</td>
+                <td class="due_dateTask">${arrayToDisplay[i].due_date.slice(0,10)}</td>
+                <td class="priorityTask">${arrayToDisplay[i].priority}</td>
+                <td class="completedTask">${arrayToDisplay[i].completed}</td>
                 <td>${arrayToDisplay[i].time_completed}</td>
                 <td><button class="deleteButton" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button></td>
                 <td><button class="completeButton">${checkComplete(arrayToDisplay[i].completed)}</button></td>
+                <td><button class="editButton" data-bs-toggle="modal" data-bs-target="#editModal">Edit</button></td>
             </tr>
         `)
     }
@@ -131,17 +159,25 @@ function formatTimeCompleted(timeIn) {
         return '';
     }
     let dateObj = new Date(timeIn);
+
+    let formattedMin = (dateObj.getMinutes() < 10 ? '0' : '') + dateObj.getMinutes();
+
     let formattedDate = `${dateObj.getMonth()}-${dateObj.getDate()}-${dateObj.getFullYear()}
-        ${dateObj.getHours()}:${dateObj.getMinutes()}`;
+        ${dateObj.getHours()}:${formattedMin}`;
     return formattedDate;
 }
 
-function formatDueDate(timeIn) {
+function formatDueDateForDom(timeIn) {
     // timeIn format YYYY-MM-DDT(timezone data)
     // split string on - and T to get individual m,d,y
     let formattedDate = timeIn.split(/[-T]/);
-    // return as MM-DD-YYYY
+    // return as MM/DD/YYYY
     return `${formattedDate[1]}-${formattedDate[2]}-${formattedDate[0]}`;
+}
+
+function formatDueDateForEdit(timeIn) {
+    let formattedDate = timeIn.split('-');
+    return `${formattedDate[2]}-${formattedDate[0]}-${formattedDate[1]}`;
 }
 
 function confirmDelete() {
@@ -149,7 +185,7 @@ function confirmDelete() {
     let parEl = $(this).closest('tr');
     let taskToDelete = {
         id: parEl.data('id'),
-        title: parEl.find('td:eq(0)').text()
+        title: parEl.find('.titleTask').text()
     };
     console.log('in confirm delete', taskToDelete);
     // create modal body text with task name
@@ -163,6 +199,68 @@ function confirmDelete() {
         <button data-bs-dismiss="modal">Cancel</button>
         <button data-id="${taskToDelete.id}" class="deleteButton" data-bs-dismiss="modal">Delete</button>`
     );
+}
+
+function editWindow() {
+    // gather title, description, due_date, and priority
+    let parEl = $(this).closest('tr');
+    let taskData = {
+        id: parEl.data('id'),
+        title: parEl.find('.titleTask').text(),
+        description: parEl.find('.descriptionTask').text(),
+        due_date: formatDueDateForEdit(parEl.find('.due_dateTask').text()),
+        priority: parEl.find('.priorityTask').text()
+    }
+    console.log('in editWindow',taskData);
+    // created inputs in the edit modal filled with gathered task data
+    let el = $('#editModalBody');
+    el.empty();
+    el.append(`
+        <table>
+            <tr>
+                <th>Title</th>
+            </tr>
+            <tr>
+                <td><input id="editTitle" type="text" value="${taskData.title}"></td>
+            </tr>
+            <tr>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td><input id="editDescription" type="text" value="${taskData.description}"></td>
+            </tr>
+            <tr>
+                <th>Due Date</th>
+            </tr>
+            <tr>
+                <td><input type="date" id="editDate" value="${taskData.due_date}"></td>
+            </tr>
+            <tr>
+                <th>Priority</th>
+            </tr>
+            <tr>
+                <td><select id="editPriority">
+                    <option value="1" ${checkSelected(taskData.priority,'low')}>low</option>
+                    <option value="2" ${checkSelected(taskData.priority,'medium')}>medium</option>
+                    <option value="3" ${checkSelected(taskData.priority,'high')}>high</option>
+                </select></td>
+            </tr>
+        </table> 
+    `);
+    // create cancel and confirm buttons
+    el = $('#editModalFooter');
+    el.empty();
+    el.append(`
+        <button data-bs-dismiss="modal">Cancel</button>
+        <button data-id="${taskData.id}" class="editButton" data-bs-dismiss="modal">Update</button>
+    `);
+}
+
+function checkSelected(priorityIn,thisPriority) {
+    if(priorityIn == thisPriority) {
+        return 'selected="selected"';
+    }
+    return '';
 }
 
 function convertPriority(priorityIn) {
