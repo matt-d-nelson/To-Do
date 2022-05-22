@@ -105,8 +105,12 @@ function displayTasks(arrayToDisplay) {
     el = $('#tasksOut');
     el.empty();
     for(let i = 0; i < arrayToDisplay.length; i++) {
-        //convert priority from int to string
+        // convert priority from int to string
         arrayToDisplay[i].priority = convertPriority(arrayToDisplay[i].priority);
+        // format due_date 
+        arrayToDisplay[i].due_date = formatDueDate(arrayToDisplay[i].due_date);
+        // format time_completed
+        arrayToDisplay[i].time_completed = formatTimeCompleted(arrayToDisplay[i].time_completed);
         el.append(`
             <tr data-id="${arrayToDisplay[i].id}">
                 <td>${arrayToDisplay[i].title}</td>
@@ -120,6 +124,24 @@ function displayTasks(arrayToDisplay) {
             </tr>
         `)
     }
+}
+
+function formatTimeCompleted(timeIn) {
+    if (timeIn == null) {
+        return '';
+    }
+    let dateObj = new Date(timeIn);
+    let formattedDate = `${dateObj.getMonth()}-${dateObj.getDate()}-${dateObj.getFullYear()}
+        ${dateObj.getHours()}:${dateObj.getMinutes()}`;
+    return formattedDate;
+}
+
+function formatDueDate(timeIn) {
+    // timeIn format YYYY-MM-DDT(timezone data)
+    // split string on - and T to get individual m,d,y
+    let formattedDate = timeIn.split(/[-T]/);
+    // return as MM-DD-YYYY
+    return `${formattedDate[1]}-${formattedDate[2]}-${formattedDate[0]}`;
 }
 
 function confirmDelete() {
