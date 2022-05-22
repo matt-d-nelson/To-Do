@@ -4,8 +4,10 @@ CREATE TABLE tasks (
 	"description" varchar(280),
 	"due_date" date, --format YYYY-MM-DD
 	"priority" integer,
-    "completed" boolean DEFAULT false
+    "completed" boolean DEFAULT false,
+    "time_completed" timestamp --format YYYY-MM-DD HH:MI:SS
 );
+
 
 DROP TABLE tasks;
 
