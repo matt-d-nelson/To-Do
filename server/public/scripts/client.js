@@ -111,7 +111,7 @@ function displayTasks(arrayToDisplay) {
         // convert priority from int to string
         arrayToDisplay[i].priority = convertPriority(arrayToDisplay[i].priority);
         // format due_date 
-        arrayToDisplay[i].due_date = formatDueDate(arrayToDisplay[i].due_date);
+        arrayToDisplay[i].due_date = formatDueDateForDom(arrayToDisplay[i].due_date);
         // format time_completed
         arrayToDisplay[i].time_completed = formatTimeCompleted(arrayToDisplay[i].time_completed);
         el.append(`
@@ -143,12 +143,17 @@ function formatTimeCompleted(timeIn) {
     return formattedDate;
 }
 
-function formatDueDate(timeIn) {
+function formatDueDateForDom(timeIn) {
     // timeIn format YYYY-MM-DDT(timezone data)
     // split string on - and T to get individual m,d,y
     let formattedDate = timeIn.split(/[-T]/);
     // return as MM/DD/YYYY
     return `${formattedDate[1]}-${formattedDate[2]}-${formattedDate[0]}`;
+}
+
+function formatDueDateForEdit(timeIn) {
+    let formattedDate = timeIn.split('-');
+    return `${formattedDate[2]}-${formattedDate[0]}-${formattedDate[1]}`;
 }
 
 function confirmDelete() {
@@ -179,16 +184,59 @@ function editWindow() {
         id: parEl.data('id'),
         title: parEl.find('.titleTask').text(),
         description: parEl.find('.descriptionTask').text(),
-        due_date: parEl.find('.due_dateTask').text(),
+        due_date: formatDueDateForEdit(parEl.find('.due_dateTask').text()),
         priority: parEl.find('.priorityTask').text()
     }
     console.log('in editWindow',taskData);
     // created inputs in the edit modal filled with gathered task data
-    // let el = $('#editModalBody');
-    // el.empty();
-    // el.append(
-        
-    // )
+    let el = $('#editModalBody');
+    el.empty();
+    el.append(`
+        <table>
+            <tr>
+                <th>Name</th>
+            </tr>
+            <tr>
+                <td id="editName"><input type="text" value="${taskData.title}"></td>
+            </tr>
+            <tr>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td id="editDescription"><input type="text" value="${taskData.description}"></td>
+            </tr>
+            <tr>
+                <th>Due Date</th>
+            </tr>
+            <tr>
+                <td><input type="date" id="editDate" value="${taskData.due_date}"></td>
+            </tr>
+            <tr>
+                <th>Priority</th>
+            </tr>
+            <tr>
+                <td><select id="editPriority">
+                    <option value="1" ${checkSelected(taskData.priority,'low')}>low</option>
+                    <option value="2" ${checkSelected(taskData.priority,'medium')}>medium</option>
+                    <option value="3" ${checkSelected(taskData.priority,'high')}>high</option>
+                </select></td>
+            </tr>
+        </table> 
+    `);
+    // create cancel and confirm buttons
+    el = $('#editModalFooter');
+    el.empty();
+    el.append(`
+        <button data-bs-dismiss="modal">Cancel</button>
+        <button data-id="${taskData.id}" class="editButton" data-bs-dismiss="modal">Update</button>
+    `);
+}
+
+function checkSelected(priorityIn,thisPriority) {
+    if(priorityIn == thisPriority) {
+        return 'selected="selected"';
+    }
+    return '';
 }
 
 function convertPriority(priorityIn) {
