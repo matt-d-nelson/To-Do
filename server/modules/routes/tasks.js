@@ -45,12 +45,17 @@ router.get('/', (req, res) => {
     })
 })
 
-// UPDATE
+// PUT
 router.put('/', (req,res) => {
-    console.log('/tasks PUT');
-    let taskId = [req.query.id];
-    let queryString = `UPDATE tasks SET completed = NOT completed WHERE id = $1;`;
-    pool.query(queryString,taskId).then((result) => {
+    console.log('/tasks PUT', req.body);
+    let taskData = [req.body.time_completed,req.body.id];
+    let queryString = `UPDATE tasks SET completed = NOT completed, time_completed = $1 WHERE id = $2;`;
+    // set time_completed back to null if 'incompleting' the task
+    if (taskData[0] == '') {
+        queryString =`UPDATE tasks SET completed = NOT completed, time_completed = NULL WHERE id = $1;`;
+        taskData.shift();
+    }
+    pool.query(queryString,taskData).then((result) => {
         res.sendStatus(200);
     }).catch((err) => {
         console.log(err);

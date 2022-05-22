@@ -70,7 +70,8 @@ function completeTask() {
     console.log('in completeTask', completedTask);
     $.ajax({
         method: 'PUT',
-        url: `/tasks?id=${completedTask.id}`
+        url: `/tasks`,
+        data: completedTask
     }).then(function(response) {
         console.log('back from PUT', response);
         getTasks();
