@@ -11,6 +11,7 @@ function onReady() {
     $('#tasksOut').on('click', '.completeButton', completeTask);
     // edit task
     $('#tasksOut').on('click', '.editButton', editWindow);
+    $('#editModal').on('click', '.editButton', editTask);
     // sort task table
     $('#sortButton').on('click', getTasks);
 
@@ -57,7 +58,7 @@ function getTasks() {
     });
 }
 
-// PUT
+// PUT COMPLETE
 function completeTask() {
     let parEl = $(this).closest('tr');
     let completedTask = {
@@ -81,6 +82,29 @@ function completeTask() {
     }).catch(function(err) {
         console.log(err);
         alert('error completing task');
+    })
+}
+
+// PUT EDIT TASK
+function editTask() {
+    let updatedTask = {
+        id: $(this).data('id'),
+        title: $('#editTitle').val(),
+        description: $('#editDescription').val(),
+        due_date: $('#editDate').val(),
+        priority: $('#editPriority').val()
+    };
+    console.log('in editTask', updatedTask);
+    $.ajax({
+        method: 'PUT',
+        url: `/tasks/update`,
+        data: updatedTask
+    }).then(function(response) {
+        console.log('back from PUT', response);
+        getTasks();
+    }).catch(function(err) {
+        console.log(err);
+        alert('error updating task');
     })
 }
 
@@ -194,16 +218,16 @@ function editWindow() {
     el.append(`
         <table>
             <tr>
-                <th>Name</th>
+                <th>Title</th>
             </tr>
             <tr>
-                <td id="editName"><input type="text" value="${taskData.title}"></td>
+                <td><input id="editTitle" type="text" value="${taskData.title}"></td>
             </tr>
             <tr>
                 <th>Description</th>
             </tr>
             <tr>
-                <td id="editDescription"><input type="text" value="${taskData.description}"></td>
+                <td><input id="editDescription" type="text" value="${taskData.description}"></td>
             </tr>
             <tr>
                 <th>Due Date</th>
