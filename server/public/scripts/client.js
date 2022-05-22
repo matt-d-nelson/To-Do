@@ -146,9 +146,11 @@ function displayTasks(arrayToDisplay) {
                 <td class="priorityTask">${arrayToDisplay[i].priority}</td>
                 <td class="completedTask">${arrayToDisplay[i].completed}</td>
                 <td>${arrayToDisplay[i].time_completed}</td>
-                <td><button class="deleteButton" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button></td>
-                <td><button class="completeButton">${checkComplete(arrayToDisplay[i].completed)}</button></td>
-                <td><button class="editButton" data-bs-toggle="modal" data-bs-target="#editModal">Edit</button></td>
+                <td class="btn-group" role="group">
+                    <button class="deleteButton btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button>
+                    <button class="completeButton btn btn-outline-success">${checkComplete(arrayToDisplay[i].completed)}</button>
+                    <button class="editButton btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editModal">Edit</button>
+                </td>
             </tr>
         `)
     }
@@ -227,7 +229,7 @@ function editWindow() {
                 <th>Description</th>
             </tr>
             <tr>
-                <td><input id="editDescription" type="text" value="${taskData.description}"></td>
+                <td><textarea id="editDescription" type="text" value="${taskData.description}"></textarea></td>
             </tr>
             <tr>
                 <th>Due Date</th>

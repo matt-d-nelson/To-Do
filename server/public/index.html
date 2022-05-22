@@ -14,20 +14,61 @@
 <body>
     <h1>To-Do List</h1>
     <div id="inputs">
-        <label>Name <input type="text" placeholder="title" id="titleIn"></label>
-        <label>Description <input type="text" placeholder="description" id="descriptionIn"></label>
-        <label>Due Date <input type="date" id="due_dateIn"></label>
-        <label>Priority <select id="priorityIn">
-            <option value="1">low</option>
-            <option value="2">medium</option>
-            <option value="3">high</option>
-        </select></label>
-        <button id="addTask">Add Task</button>
-        <br>
+        <div class="modal fade" id="addModal" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Task</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body" id="addModalBody"> 
+                        <table>
+                            <tr>
+                                <th>Name</th>
+                            </tr>
+                            <tr>
+                                <td><input type="text" placeholder="title" id="titleIn"></td>
+                            </tr>
+                            <tr>
+                                <th>Description</th>
+                            </tr>
+                            <tr>
+                                <td><textarea type="text" placeholder="description" id="descriptionIn"></textarea></td>
+                            </tr>
+                            <tr>
+                                <th>Due Date</th>
+                            </tr>
+                            <tr>
+                                <td><input type="date" id="due_dateIn"></td>
+                            </tr>
+                            <tr>
+                                <th>Priority</th>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <select id="priorityIn">
+                                        <option value="1">low</option>
+                                        <option value="2">medium</option>
+                                        <option value="3">high</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="modal-footer" id="addModalFooter">
+                        <button data-bs-dismiss="modal">Cancel</button>
+                        <button id="addTask" data-bs-dismiss="modal">Add Task</button> 
+                    </div>
+                </div>
+    
+            </div>
+        </div>
+        <button data-bs-toggle="modal" data-bs-target="#addModal">Add Task</button> 
         <label> Sort By <select id="sortByIn">
             <option value="id">Age</option>
             <option value="due_date">Due Date</option>
             <option value="priority">Priority</option>
+            <option value="completed">Completed</option>
         </select></label>
         <button id="sortButton">Sort Tasks</button>
     </div>
@@ -70,7 +111,7 @@
                 <div class="modal-body" id="editModalBody"> 
                 </div>
                 <div class="modal-footer" id="editModalFooter">
-                </div>
+                </div> 
             </div>
 
         </div>
