@@ -2,10 +2,14 @@ $(document).ready(onReady);
 
 function onReady() {
     console.log('JQ');
-
+    // add task
     $('#addTask').on('click', addTask);
-    $('#tasksOut').on('click', '.deleteButton', deleteTask);
+    // confirm and delete task
+    $('#tasksOut').on('click', '.deleteButton', confirmDelete);
+    $('#deleteModal').on('click', '.deleteButton', deleteTask);
+    // complete task
     $('#tasksOut').on('click', '.completeButton', completeTask);
+    // sort task table
     $('#sortButton').on('click', getTasks);
 
     getTasks();
@@ -68,16 +72,13 @@ function completeTask() {
 
 // DELETE
 function deleteTask() {
-    let parEl = $(this).closest('tr');
-    let taskToDelete = {
-        id: parEl.data('id'),
-        title: parEl.find('td:eq(0)').text()
-    };
-    console.log('in deleteTask', taskToDelete);
-    // todo: add bootstrap verification before sending delete req
+    // gather id from clicked modal button
+    let idToDelete = $(this).data('id');
+    console.log('in deleteTask', idToDelete);
+    // send delete request
     $.ajax({
         method: 'DELETE',
-        url: `/tasks?id=${taskToDelete.id}`
+        url: `/tasks?id=${idToDelete}`
     }).then( function(response) {
         console.log('back from DELETE', response);
         getTasks();
@@ -102,11 +103,32 @@ function displayTasks(arrayToDisplay) {
                 <td>${arrayToDisplay[i].due_date.slice(0,10)}</td>
                 <td>${arrayToDisplay[i].priority}</td>
                 <td>${arrayToDisplay[i].completed}</td>
-                <td><button class="deleteButton">Delete</button></td>
+                <td><button class="deleteButton" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button></td>
                 <td><button class="completeButton">${checkComplete(arrayToDisplay[i].completed)}</button></td>
             </tr>
         `)
     }
+}
+
+function confirmDelete() {
+    // gather task info from clicked button
+    let parEl = $(this).closest('tr');
+    let taskToDelete = {
+        id: parEl.data('id'),
+        title: parEl.find('td:eq(0)').text()
+    };
+    console.log('in confirm delete', taskToDelete);
+    // create modal body text with task name
+    let el = $('#deleteModalBody');
+    el.empty();
+    el.append(`<h6>Are you sure you would like to delete ${taskToDelete.title}?</h6>`);
+    // create modal footer with id in button
+    el = $('#deleteModalFooter');
+    el.empty();
+    el.append(`
+        <button data-bs-dismiss="modal">Close</button>
+        <button data-id="${taskToDelete.id}" class="deleteButton" data-bs-dismiss="modal">Delete</button>`
+    );
 }
 
 function convertPriority(priorityIn) {
