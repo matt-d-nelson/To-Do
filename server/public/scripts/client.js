@@ -183,6 +183,12 @@ function editWindow() {
         priority: parEl.find('.priorityTask').text()
     }
     console.log('in editWindow',taskData);
+    // created inputs in the edit modal filled with gathered task data
+    // let el = $('#editModalBody');
+    // el.empty();
+    // el.append(
+        
+    // )
 }
 
 function convertPriority(priorityIn) {

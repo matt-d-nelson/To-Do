@@ -67,7 +67,37 @@
                     <h5 class="modal-title">Edit Task</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body" id="editModalBody">    
+                <div class="modal-body" id="editModalBody"> 
+                    <table>
+                        <tr>
+                            <th>Name</th>
+                        </tr>
+                        <tr>
+                            <td id="editName"><input type="text"></td>
+                        </tr>
+                        <tr>
+                            <th>Description</th>
+                        </tr>
+                        <tr>
+                            <td id="editDescription"><input type="text"></td>
+                        </tr>
+                        <tr>
+                            <th>Due Date</th>
+                        </tr>
+                        <tr>
+                            <td><input type="date" id="editDate" value="1992-06-09"></td>
+                        </tr>
+                        <tr>
+                            <th>Priority</th>
+                        </tr>
+                        <tr>
+                            <td><select id="editPriority" >
+                                <option value="1">low</option>
+                                <option value="2">medium</option>
+                                <option value="3" selected="selected">high</option>
+                            </select></td>
+                        </tr>
+                    </table>   
                 </div>
                 <div class="modal-footer" id="editModalFooter">
                 </div>
