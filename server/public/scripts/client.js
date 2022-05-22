@@ -61,7 +61,8 @@ function completeTask() {
     let completedTask = {
         id: parEl.data('id'),
     }
-    if (parEl.find('td:eq(4)').text() == 'false') {
+    console.log();
+    if (parEl.find('.completedTask').text() == 'false') {
         let timeNow = new Date();
         completedTask.time_completed = `${timeNow.getFullYear()}-${timeNow.getMonth()}-${timeNow.getDate()} ${timeNow.getHours()}:${timeNow.getMinutes()}:${timeNow.getSeconds()}`;
     } else {
@@ -113,11 +114,11 @@ function displayTasks(arrayToDisplay) {
         arrayToDisplay[i].time_completed = formatTimeCompleted(arrayToDisplay[i].time_completed);
         el.append(`
             <tr data-id="${arrayToDisplay[i].id}">
-                <td>${arrayToDisplay[i].title}</td>
-                <td>${arrayToDisplay[i].description}</td>
-                <td>${arrayToDisplay[i].due_date.slice(0,10)}</td>
-                <td>${arrayToDisplay[i].priority}</td>
-                <td>${arrayToDisplay[i].completed}</td>
+                <td class="titleTask">${arrayToDisplay[i].title}</td>
+                <td class="descriptionTask">${arrayToDisplay[i].description}</td>
+                <td class="due_dateTask">${arrayToDisplay[i].due_date.slice(0,10)}</td>
+                <td class="priorityTask">${arrayToDisplay[i].priority}</td>
+                <td class="completedTask">${arrayToDisplay[i].completed}</td>
                 <td>${arrayToDisplay[i].time_completed}</td>
                 <td><button class="deleteButton" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button></td>
                 <td><button class="completeButton">${checkComplete(arrayToDisplay[i].completed)}</button></td>
@@ -131,8 +132,11 @@ function formatTimeCompleted(timeIn) {
         return '';
     }
     let dateObj = new Date(timeIn);
+
+    let formattedMin = (dateObj.getMinutes() < 10 ? '0' : '') + dateObj.getMinutes();
+
     let formattedDate = `${dateObj.getMonth()}-${dateObj.getDate()}-${dateObj.getFullYear()}
-        ${dateObj.getHours()}:${dateObj.getMinutes()}`;
+        ${dateObj.getHours()}:${formattedMin}`;
     return formattedDate;
 }
 
