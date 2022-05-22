@@ -57,10 +57,21 @@ function getTasks() {
 
 // PUT
 function completeTask() {
-    let completedId = $(this).closest('tr').data('id');
+    let parEl = $(this).closest('tr');
+    let completedTask = {
+        id: parEl.data('id'),
+    }
+    if (parEl.find('td:eq(4)').text() == 'false') {
+        let timeNow = new Date();
+        completedTask.time_completed = `${timeNow.getFullYear()}-${timeNow.getMonth()}-${timeNow.getDate()} ${timeNow.getHours()}:${timeNow.getMinutes()}:${timeNow.getSeconds()}`;
+    } else {
+        completedTask.time_completed = null;
+    }
+    console.log('in completeTask', completedTask);
     $.ajax({
         method: 'PUT',
-        url: `/tasks?id=${completedId}`
+        url: `/tasks`,
+        data: completedTask
     }).then(function(response) {
         console.log('back from PUT', response);
         getTasks();
@@ -94,8 +105,12 @@ function displayTasks(arrayToDisplay) {
     el = $('#tasksOut');
     el.empty();
     for(let i = 0; i < arrayToDisplay.length; i++) {
-        //convert priority from int to string
+        // convert priority from int to string
         arrayToDisplay[i].priority = convertPriority(arrayToDisplay[i].priority);
+        // format due_date 
+        arrayToDisplay[i].due_date = formatDueDate(arrayToDisplay[i].due_date);
+        // format time_completed
+        arrayToDisplay[i].time_completed = formatTimeCompleted(arrayToDisplay[i].time_completed);
         el.append(`
             <tr data-id="${arrayToDisplay[i].id}">
                 <td>${arrayToDisplay[i].title}</td>
@@ -103,11 +118,30 @@ function displayTasks(arrayToDisplay) {
                 <td>${arrayToDisplay[i].due_date.slice(0,10)}</td>
                 <td>${arrayToDisplay[i].priority}</td>
                 <td>${arrayToDisplay[i].completed}</td>
+                <td>${arrayToDisplay[i].time_completed}</td>
                 <td><button class="deleteButton" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button></td>
                 <td><button class="completeButton">${checkComplete(arrayToDisplay[i].completed)}</button></td>
             </tr>
         `)
     }
+}
+
+function formatTimeCompleted(timeIn) {
+    if (timeIn == null) {
+        return '';
+    }
+    let dateObj = new Date(timeIn);
+    let formattedDate = `${dateObj.getMonth()}-${dateObj.getDate()}-${dateObj.getFullYear()}
+        ${dateObj.getHours()}:${dateObj.getMinutes()}`;
+    return formattedDate;
+}
+
+function formatDueDate(timeIn) {
+    // timeIn format YYYY-MM-DDT(timezone data)
+    // split string on - and T to get individual m,d,y
+    let formattedDate = timeIn.split(/[-T]/);
+    // return as MM-DD-YYYY
+    return `${formattedDate[1]}-${formattedDate[2]}-${formattedDate[0]}`;
 }
 
 function confirmDelete() {
@@ -126,7 +160,7 @@ function confirmDelete() {
     el = $('#deleteModalFooter');
     el.empty();
     el.append(`
-        <button data-bs-dismiss="modal">Close</button>
+        <button data-bs-dismiss="modal">Cancel</button>
         <button data-id="${taskToDelete.id}" class="deleteButton" data-bs-dismiss="modal">Delete</button>`
     );
 }
