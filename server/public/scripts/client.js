@@ -9,6 +9,8 @@ function onReady() {
     $('#deleteModal').on('click', '.deleteButton', deleteTask);
     // complete task
     $('#tasksOut').on('click', '.completeButton', completeTask);
+    // edit task
+    $('#tasksOut').on('click', '.editButton', editWindow);
     // sort task table
     $('#sortButton').on('click', getTasks);
 
@@ -122,6 +124,7 @@ function displayTasks(arrayToDisplay) {
                 <td>${arrayToDisplay[i].time_completed}</td>
                 <td><button class="deleteButton" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button></td>
                 <td><button class="completeButton">${checkComplete(arrayToDisplay[i].completed)}</button></td>
+                <td><button class="editButton" data-bs-toggle="modal" data-bs-target="#editModal">Edit</button></td>
             </tr>
         `)
     }
@@ -144,7 +147,7 @@ function formatDueDate(timeIn) {
     // timeIn format YYYY-MM-DDT(timezone data)
     // split string on - and T to get individual m,d,y
     let formattedDate = timeIn.split(/[-T]/);
-    // return as MM-DD-YYYY
+    // return as MM/DD/YYYY
     return `${formattedDate[1]}-${formattedDate[2]}-${formattedDate[0]}`;
 }
 
@@ -153,7 +156,7 @@ function confirmDelete() {
     let parEl = $(this).closest('tr');
     let taskToDelete = {
         id: parEl.data('id'),
-        title: parEl.find('td:eq(0)').text()
+        title: parEl.find('.titleTask').text()
     };
     console.log('in confirm delete', taskToDelete);
     // create modal body text with task name
@@ -167,6 +170,19 @@ function confirmDelete() {
         <button data-bs-dismiss="modal">Cancel</button>
         <button data-id="${taskToDelete.id}" class="deleteButton" data-bs-dismiss="modal">Delete</button>`
     );
+}
+
+function editWindow() {
+    // gather title, description, due_date, and priority
+    let parEl = $(this).closest('tr');
+    let taskData = {
+        id: parEl.data('id'),
+        title: parEl.find('.titleTask').text(),
+        description: parEl.find('.descriptionTask').text(),
+        due_date: parEl.find('.due_dateTask').text(),
+        priority: parEl.find('.priorityTask').text()
+    }
+    console.log('in editWindow',taskData);
 }
 
 function convertPriority(priorityIn) {
