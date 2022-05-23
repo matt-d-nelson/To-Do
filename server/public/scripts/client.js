@@ -14,7 +14,8 @@ function onReady() {
     $('#tasksOut').on('click', '.editButton', editWindow);
     $('#editModal').on('click', '.editButton', editTask);
     // sort task table
-    $('#sortButton').on('click', getTasks);
+    $('#sortDropdown').on('click', '.dropdown-item' ,setSortBy);
+    $('#sortButton').on('click', '.dropdown-item' ,getTasks);
     // display tasks automatically
     getTasks();
 }
@@ -22,6 +23,7 @@ function onReady() {
 //---------------------GLOBAL VARIABLES---------------------//
 
 let selectedAccordion = 0;
+let sortBy = 'id';
 
 //---------------------SERVER REQUESTS---------------------//
 
@@ -55,7 +57,6 @@ function addTask() {
 
 // GET
 function getTasks() {
-    let sortBy = $('#sortByIn').val();
     $.ajax({
         method: 'GET',
         url: `/tasks?sortBy=${sortBy}`
@@ -75,7 +76,7 @@ function completeTask() {
     }
     selectedAccordion = completedTask.id;
     console.log('in completedTask', completedTask);
-    if (parEl.find('.completedTask').text() == 'false') {
+    if (parEl.find('.completedTask').text() == 'Not Complete') {
         let timeNow = new Date();
         completedTask.time_completed = `${timeNow.getFullYear()}-${timeNow.getMonth()}-${timeNow.getDate()} ${timeNow.getHours()}:${timeNow.getMinutes()}:${timeNow.getSeconds()}`;
     } else {
@@ -163,21 +164,25 @@ function displayTasks(arrayToDisplay) {
                     </button>
                 </h2>
                 <div id="collapse${i}" class="accordion-collapse collapse ${thisCollapsed[1]}" data-bs-parent="#tasksOut">
-                    <div class="accordion-body">
-                        <label>Description<div class="descriptionTask">${arrayToDisplay[i].description}</div></label>
-                        <br>
-                        <label>Due Date<div class="due_dateTask">${arrayToDisplay[i].due_date.slice(0,10)}</div></label>
-                        <br>
-                        <label>Priority<div class="priorityTask">${arrayToDisplay[i].priority}</div></label>
-                        <br>
-                        <label>Completed<div class="completedTask">${arrayToDisplay[i].completed}</div></label>
-                        <br>
-                        <label>Time Completed<div class="completedTask">${arrayToDisplay[i].time_completed}</div></label>
-                        <br>
-                        <div class="btn-group" role="group">
-                            <button class="deleteButton btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button>
-                            <button class="completeButton btn btn-outline-success">${checkComplete(arrayToDisplay[i].completed)}</button>
-                            <button class="editButton btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editModal">Edit</button>
+                    <div class="accordion-body container">
+                        <div class="row">
+                            <div class="col-6">
+                                <label><strong><u>Description</u></strong><div class="descriptionTask">${arrayToDisplay[i].description}</div></label>
+                            </div>  
+                            <div class="col-6">
+                                <label><strong><u>Due Date</u></strong><div class="due_dateTask">${arrayToDisplay[i].due_date.slice(0,10)}</div></label>
+                                <br>
+                                <label><strong><u>Priority</u></strong><div class="priorityTask">${arrayToDisplay[i].priority}</div></label>
+                                <br>
+                                <label><strong><u>Time Completed</u></strong><div class="completedTask">${arrayToDisplay[i].time_completed}</div></label>
+                            </div>  
+                        </div>
+                        <div class="row pt-3">
+                            <div class="btn-group" role="group">
+                                <button class="deleteButton btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button>
+                                <button class="completeButton btn btn-outline-success">${checkComplete(arrayToDisplay[i].completed)}</button>
+                                <button class="editButton btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editModal">Edit</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -195,7 +200,7 @@ function checkCollapsed(idToCheck) {
 
 function formatTimeCompleted(timeIn) {
     if (timeIn == null) {
-        return '';
+        return 'Not Complete';
     }
     let dateObj = new Date(timeIn);
 
@@ -334,4 +339,11 @@ function verifyInputs(inputsToVerify) {
         return false;
     }
     return true;
+}
+
+function setSortBy() {
+    sortBy = $(this).data('sort');
+    selectedAccordion = 0;
+    console.log('in setSortBy', sortBy);
+    getTasks();
 }
