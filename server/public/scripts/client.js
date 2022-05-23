@@ -207,7 +207,7 @@ function formatTimeCompleted(timeIn) {
     let formattedMin = (dateObj.getMinutes() < 10 ? '0' : '') + dateObj.getMinutes();
 
     let formattedDate = `${dateObj.getMonth()}-${dateObj.getDate()}-${dateObj.getFullYear()}
-        ${dateObj.getHours()}:${formattedMin}`;
+        @ ${dateObj.getHours()}:${formattedMin}`;
     return formattedDate;
 }
 
@@ -260,43 +260,35 @@ function editWindow() {
     let el = $('#editModalBody');
     el.empty();
     el.append(`
-        <table>
-            <tr>
-                <th>Title</th>
-            </tr>
-            <tr>
-                <td><input id="editTitle" type="text" value="${taskData.title}"></td>
-            </tr>
-            <tr>
-                <th>Description</th>
-            </tr>
-            <tr>
-                <td><textarea id="editDescription" type="text">${taskData.description}</textarea></td>
-            </tr>
-            <tr>
-                <th>Due Date</th>
-            </tr>
-            <tr>
-                <td><input type="date" id="editDate" value="${taskData.due_date}"></td>
-            </tr>
-            <tr>
-                <th>Priority</th>
-            </tr>
-            <tr>
-                <td><select id="editPriority">
-                    <option value="1" ${checkSelected(taskData.priority,'low')}>low</option>
-                    <option value="2" ${checkSelected(taskData.priority,'medium')}>medium</option>
-                    <option value="3" ${checkSelected(taskData.priority,'high')}>high</option>
-                </select></td>
-            </tr>
-        </table> 
+        <div class="container">
+            <div class="row">
+                <label><strong>Name</strong><input id="editTitle" type="text" class="w-100" value="${taskData.title}"></label>
+            </div>
+            <div class="row">
+                <label><strong>Description</strong><textarea id="editDescription" class="w-100" type="text">${taskData.description}</textarea></label>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <label><strong>Due Date</strong><input type="date" id="editDate" value="${taskData.due_date}"></label>
+                </div>
+                <div class="col">
+                    <label><strong>Priority</strong>
+                        <select id="editPriority" class="w-100">
+                            <option value="1" ${checkSelected(taskData.priority,'low')}>low</option>
+                            <option value="2" ${checkSelected(taskData.priority,'medium')}>medium</option>
+                            <option value="3" ${checkSelected(taskData.priority,'high')}>high</option>
+                        </select>
+                    </label>
+                </div>
+            </div>
+        </div>      
     `);
     // create cancel and confirm buttons
     el = $('#editModalFooter');
     el.empty();
     el.append(`
-        <button data-bs-dismiss="modal">Cancel</button>
-        <button data-id="${taskData.id}" class="editButton" data-bs-dismiss="modal">Update</button>
+        <button class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-primary" data-id="${taskData.id}" class="editButton" data-bs-dismiss="modal">Update</button>
     `);
 }
 
