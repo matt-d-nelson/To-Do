@@ -3,6 +3,7 @@ $(document).ready(onReady);
 function onReady() {
     console.log('JQ');
     // add task
+    $('#addTaskOpen').on('click', clearInputs);
     $('#addTask').on('click', addTask);
     // confirm and delete task
     $('#tasksOut').on('click', '.deleteButton', confirmDelete);
@@ -35,17 +36,21 @@ function addTask() {
     }
     console.log('in addTask', taskToAdd);
     clearInputs();
-    $.ajax({
-        method: 'POST',
-        url: '/tasks',
-        data: taskToAdd
-    }).then(function(response) {
-        console.log('back from POST', response);
-        getTasks();
-    }).catch(function(err) {
-        console.log(err);
-        alert('error adding task');
-    })
+    if (verifyInputs(taskToAdd)) {
+        $.ajax({
+            method: 'POST',
+            url: '/tasks',
+            data: taskToAdd
+        }).then(function(response) {
+            console.log('back from POST', response);
+            getTasks();
+        }).catch(function(err) {
+            console.log(err);
+            alert('error adding task');
+        })
+    } else {
+        alert('Please enter a valid title and due date');
+    }
 }
 
 // GET
@@ -101,17 +106,21 @@ function editTask() {
         priority: $('#editPriority').val()
     };
     console.log('in editTask', updatedTask);
-    $.ajax({
-        method: 'PUT',
-        url: `/tasks/update`,
-        data: updatedTask
-    }).then(function(response) {
-        console.log('back from PUT', response);
-        getTasks();
-    }).catch(function(err) {
-        console.log(err);
-        alert('error updating task');
-    })
+    if (verifyInputs(updatedTask)) {
+        $.ajax({
+            method: 'PUT',
+            url: `/tasks/update`,
+            data: updatedTask
+        }).then(function(response) {
+            console.log('back from PUT', response);
+            getTasks();
+        }).catch(function(err) {
+            console.log(err);
+            alert('error updating task');
+        })
+    } else {
+        alert('Please enter a valid title and due date');
+    }   
 }
 
 // DELETE
@@ -317,5 +326,12 @@ function clearInputs() {
     $('#titleIn').val('');
     $('#descriptionIn').val('');
     $('#due_dateIn').val('');
-    $('#priorityIn').val('');
+    $('#priorityIn').val('1');
+}
+
+function verifyInputs(inputsToVerify) {
+    if (inputsToVerify.title === '' || inputsToVerify.due_date === '') {
+        return false;
+    }
+    return true;
 }
