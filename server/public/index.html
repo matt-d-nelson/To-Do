@@ -72,19 +72,8 @@
         </select></label>
         <button id="sortButton">Sort Tasks</button>
     </div>
-    <div id="outputs">
-        <table>
-            <thead>
-                <th>Title</th>
-                <th>Description</th>
-                <th>Due Date</th>
-                <th>Priority</th>
-                <th>Completed</th>
-                <th>Time Completed</th>
-            </thead>
-            <tbody id="tasksOut">
-            </tbody>
-        </table>
+    <div class="accordion" id="tasksOut">
+
     </div>
     <div class="modal fade" id="deleteModal" role="dialog">
         <div class="modal-dialog" role="document">
@@ -98,7 +87,6 @@
                 <div class="modal-footer" id="deleteModalFooter">
                 </div>
             </div>
-
         </div>
     </div>
     <div class="modal fade" id="editModal" role="dialog">

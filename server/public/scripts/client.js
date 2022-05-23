@@ -14,9 +14,13 @@ function onReady() {
     $('#editModal').on('click', '.editButton', editTask);
     // sort task table
     $('#sortButton').on('click', getTasks);
-
+    // display tasks automatically
     getTasks();
 }
+
+//---------------------GLOBAL VARIABLES---------------------//
+
+let selectedAccordion = 0;
 
 //---------------------SERVER REQUESTS---------------------//
 
@@ -30,7 +34,7 @@ function addTask() {
         priority: $('#priorityIn').val()
     }
     console.log('in addTask', taskToAdd);
-
+    clearInputs();
     $.ajax({
         method: 'POST',
         url: '/tasks',
@@ -60,11 +64,12 @@ function getTasks() {
 
 // PUT COMPLETE
 function completeTask() {
-    let parEl = $(this).closest('tr');
+    let parEl = $(this).closest('.accordion-item');
     let completedTask = {
         id: parEl.data('id'),
     }
-    console.log();
+    selectedAccordion = completedTask.id;
+    console.log('in completedTask', completedTask);
     if (parEl.find('.completedTask').text() == 'false') {
         let timeNow = new Date();
         completedTask.time_completed = `${timeNow.getFullYear()}-${timeNow.getMonth()}-${timeNow.getDate()} ${timeNow.getHours()}:${timeNow.getMinutes()}:${timeNow.getSeconds()}`;
@@ -87,6 +92,7 @@ function completeTask() {
 
 // PUT EDIT TASK
 function editTask() {
+    selectedAccordion = $(this).data('id');
     let updatedTask = {
         id: $(this).data('id'),
         title: $('#editTitle').val(),
@@ -138,22 +144,44 @@ function displayTasks(arrayToDisplay) {
         arrayToDisplay[i].due_date = formatDueDateForDom(arrayToDisplay[i].due_date);
         // format time_completed
         arrayToDisplay[i].time_completed = formatTimeCompleted(arrayToDisplay[i].time_completed);
+        // check to see if the accordion should be collapsed
+        let thisCollapsed = checkCollapsed(arrayToDisplay[i].id)
         el.append(`
-            <tr data-id="${arrayToDisplay[i].id}">
-                <td class="titleTask">${arrayToDisplay[i].title}</td>
-                <td class="descriptionTask">${arrayToDisplay[i].description}</td>
-                <td class="due_dateTask">${arrayToDisplay[i].due_date.slice(0,10)}</td>
-                <td class="priorityTask">${arrayToDisplay[i].priority}</td>
-                <td class="completedTask">${arrayToDisplay[i].completed}</td>
-                <td>${arrayToDisplay[i].time_completed}</td>
-                <td class="btn-group" role="group">
-                    <button class="deleteButton btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button>
-                    <button class="completeButton btn btn-outline-success">${checkComplete(arrayToDisplay[i].completed)}</button>
-                    <button class="editButton btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editModal">Edit</button>
-                </td>
-            </tr>
+            <div class="accordion-item" data-id="${arrayToDisplay[i].id}">
+                <h2 class="accordion-header" id="heading${i}">
+                    <button class="accordion-button ${thisCollapsed[0]} titleTask" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${i}">
+                        ${arrayToDisplay[i].title}
+                    </button>
+                </h2>
+                <div id="collapse${i}" class="accordion-collapse collapse ${thisCollapsed[1]}" data-bs-parent="#tasksOut">
+                    <div class="accordion-body">
+                        <label>Description<div class="descriptionTask">${arrayToDisplay[i].description}</div></label>
+                        <br>
+                        <label>Due Date<div class="due_dateTask">${arrayToDisplay[i].due_date.slice(0,10)}</div></label>
+                        <br>
+                        <label>Priority<div class="priorityTask">${arrayToDisplay[i].priority}</div></label>
+                        <br>
+                        <label>Completed<div class="completedTask">${arrayToDisplay[i].completed}</div></label>
+                        <br>
+                        <label>Time Completed<div class="completedTask">${arrayToDisplay[i].time_completed}</div></label>
+                        <br>
+                        <div class="btn-group" role="group">
+                            <button class="deleteButton btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button>
+                            <button class="completeButton btn btn-outline-success">${checkComplete(arrayToDisplay[i].completed)}</button>
+                            <button class="editButton btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editModal">Edit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         `)
     }
+}
+
+function checkCollapsed(idToCheck) {
+    if(selectedAccordion === idToCheck) {
+        return ['','show'];
+    }
+    return ['collapsed',''];
 }
 
 function formatTimeCompleted(timeIn) {
@@ -184,7 +212,7 @@ function formatDueDateForEdit(timeIn) {
 
 function confirmDelete() {
     // gather task info from clicked button
-    let parEl = $(this).closest('tr');
+    let parEl = $(this).closest('.accordion-item');
     let taskToDelete = {
         id: parEl.data('id'),
         title: parEl.find('.titleTask').text()
@@ -205,10 +233,10 @@ function confirmDelete() {
 
 function editWindow() {
     // gather title, description, due_date, and priority
-    let parEl = $(this).closest('tr');
+    let parEl = $(this).closest('.accordion-item');
     let taskData = {
         id: parEl.data('id'),
-        title: parEl.find('.titleTask').text(),
+        title: parEl.find('.titleTask').text().trim(),
         description: parEl.find('.descriptionTask').text(),
         due_date: formatDueDateForEdit(parEl.find('.due_dateTask').text()),
         priority: parEl.find('.priorityTask').text()
@@ -229,7 +257,7 @@ function editWindow() {
                 <th>Description</th>
             </tr>
             <tr>
-                <td><textarea id="editDescription" type="text" value="${taskData.description}"></textarea></td>
+                <td><textarea id="editDescription" type="text">${taskData.description}</textarea></td>
             </tr>
             <tr>
                 <th>Due Date</th>
@@ -283,4 +311,11 @@ function checkComplete(completedIn) {
         return 'Complete';
     }
     return 'Incomplete';
+}
+
+function clearInputs() {
+    $('#titleIn').val('');
+    $('#descriptionIn').val('');
+    $('#due_dateIn').val('');
+    $('#priorityIn').val('');
 }
