@@ -1,3 +1,65 @@
+:root {
+    --high1: rgb(170, 0, 0, 0.8);
+    --high2: rgb(170, 0, 0, 0.6);
+    --high3: rgba(170, 0, 0, 0.4);
+
+    --medium1: rgb(187, 99, 0, 0.8);
+    --medium2: rgb(187, 99, 0, 0.6);
+    --medium3: rgb(187, 99, 0, 0.4);
+
+    --low1: rgb(227, 207, 0, 0.8);
+    --low2: rgb(227, 207, 0, 0.6);
+    --low3: rgb(227, 207, 0, 0.4);
+
+    --complete: rgba(185, 255, 159, 0.8);
+}
+
 body {
-    background-color: antiquewhite;
+ background-color: rgb(240, 240, 240);
+ color: rgb(89, 89, 89);
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: inherit;
+    transform: none;
+    color: inherit;
+}
+.accordion-button:not(.collapsed)::after {
+    filter: brightness(0%);
+}
+
+/*-----------------Priority Classes-----------------*/
+
+.high1 {
+    background-color: var(--high1);
+}
+.high2 {
+    background-color: var(--high2);
+}
+.high3 {
+    background-color: var(--high3);
+}
+
+.medium1 {
+    background-color: var(--medium1);
+}
+.medium2 {
+    background-color: var(--medium2);
+}
+.medium3 {
+    background-color: var(--medium3);
+}
+
+.low1 {
+    background-color: var(--low1);
+}
+.low2 {
+    background-color: var(--low2);
+}
+.low3 {
+    background-color: var(--low3);
+}
+
+.complete {
+    background-color: var(--complete);
 }

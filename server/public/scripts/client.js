@@ -15,7 +15,6 @@ function onReady() {
     $('#editModal').on('click', '.editButton', editTask);
     // sort task table
     $('#sortDropdown').on('click', '.dropdown-item' ,setSortBy);
-    $('#sortButton').on('click', '.dropdown-item' ,getTasks);
     // display tasks automatically
     getTasks();
 }
@@ -148,6 +147,8 @@ function displayTasks(arrayToDisplay) {
     el = $('#tasksOut');
     el.empty();
     for(let i = 0; i < arrayToDisplay.length; i++) {
+        // adjust background color based on priority/completed/due_date
+        let backgroundClass = calculateBackgroundColor(arrayToDisplay[i]);
         // convert priority from int to string
         arrayToDisplay[i].priority = convertPriority(arrayToDisplay[i].priority);
         // format due_date 
@@ -158,12 +159,14 @@ function displayTasks(arrayToDisplay) {
         let thisCollapsed = checkCollapsed(arrayToDisplay[i].id)
         el.append(`
             <div class="accordion-item" data-id="${arrayToDisplay[i].id}">
+            <div class="${backgroundClass}">
                 <h2 class="accordion-header" id="heading${i}">
-                    <button class="accordion-button ${thisCollapsed[0]} titleTask" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${i}">
+                    <button class="accordion-button ${thisCollapsed[0]} ${backgroundClass} titleTask" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${i}">
                         ${arrayToDisplay[i].title}
                     </button>
                 </h2>
-                <div id="collapse${i}" class="accordion-collapse collapse ${thisCollapsed[1]}" data-bs-parent="#tasksOut">
+                
+                <div id="collapse${i}" class="accordion-collapse collapse  ${thisCollapsed[1]}" data-bs-parent="#tasksOut">
                     <div class="accordion-body container">
                         <div class="row">
                             <div class="col-6">
@@ -179,15 +182,16 @@ function displayTasks(arrayToDisplay) {
                         </div>
                         <div class="row pt-3">
                             <div class="btn-group" role="group">
-                                <button class="deleteButton btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button>
-                                <button class="completeButton btn btn-outline-success">${checkComplete(arrayToDisplay[i].completed)}</button>
-                                <button class="editButton btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editModal">Edit</button>
+                                <button class="deleteButton btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button>
+                                <button class="completeButton btn btn-success">${checkComplete(arrayToDisplay[i].completed)}</button>
+                                <button class="editButton btn btn-secondary" data-bs-toggle="modal" data-bs-target="#editModal">Edit</button>
                             </div>
                         </div>
                     </div>
                 </div>
+                </div>
             </div>
-        `)
+        `);
     }
 }
 
@@ -240,8 +244,8 @@ function confirmDelete() {
     el = $('#deleteModalFooter');
     el.empty();
     el.append(`
-        <button data-bs-dismiss="modal">Cancel</button>
-        <button data-id="${taskToDelete.id}" class="deleteButton" data-bs-dismiss="modal">Delete</button>`
+        <button data-bs-dismiss="modal" class="btn btn-secondary">Cancel</button>
+        <button data-id="${taskToDelete.id}" class="deleteButton btn btn-danger" data-bs-dismiss="modal">Delete</button>`
     );
 }
 
@@ -288,7 +292,7 @@ function editWindow() {
     el.empty();
     el.append(`
         <button class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
-        <button class="btn btn-primary" data-id="${taskData.id}" class="editButton" data-bs-dismiss="modal">Update</button>
+        <button class="btn btn-primary editButton" data-id="${taskData.id}" class="editButton" data-bs-dismiss="modal">Update</button>
     `);
 }
 
@@ -338,4 +342,37 @@ function setSortBy() {
     selectedAccordion = 0;
     console.log('in setSortBy', sortBy);
     getTasks();
+}
+
+function calculateBackgroundColor(taskToCalculate) {
+    // make background green if the task is completed
+    if(taskToCalculate.completed) {return 'complete';}
+    let returnClass = '';
+    // check to see what priority the task is
+    switch (taskToCalculate.priority) {
+        case 1:
+            returnClass = 'low';
+            break;
+        case 2:
+            returnClass = 'medium';
+            break;
+        case 3:
+            returnClass = 'high';
+            break;
+        default:
+            break;
+    }
+    // check to see how much time there is before the due date
+    let timeDue = new Date(taskToCalculate.due_date).getTime();
+    let timeNow = new Date().getTime();
+    let timeUntilDue = timeDue-timeNow;
+    const oneDay = 86400000;
+    // change background color based on time untill due
+    if (timeUntilDue > oneDay*7) {
+        return returnClass += '3';
+    }
+    if (timeUntilDue > oneDay) {
+        return returnClass += '2';
+    }
+    return returnClass += '1';
 }
