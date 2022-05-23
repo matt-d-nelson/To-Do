@@ -3,6 +3,7 @@ $(document).ready(onReady);
 function onReady() {
     console.log('JQ');
     // add task
+    $('#addTaskOpen').on('click', clearInputs);
     $('#addTask').on('click', addTask);
     // confirm and delete task
     $('#tasksOut').on('click', '.deleteButton', confirmDelete);
@@ -13,10 +14,16 @@ function onReady() {
     $('#tasksOut').on('click', '.editButton', editWindow);
     $('#editModal').on('click', '.editButton', editTask);
     // sort task table
-    $('#sortButton').on('click', getTasks);
-
+    $('#sortDropdown').on('click', '.dropdown-item' ,setSortBy);
+    $('#sortButton').on('click', '.dropdown-item' ,getTasks);
+    // display tasks automatically
     getTasks();
 }
+
+//---------------------GLOBAL VARIABLES---------------------//
+
+let selectedAccordion = 0;
+let sortBy = 'id';
 
 //---------------------SERVER REQUESTS---------------------//
 
@@ -30,23 +37,26 @@ function addTask() {
         priority: $('#priorityIn').val()
     }
     console.log('in addTask', taskToAdd);
-
-    $.ajax({
-        method: 'POST',
-        url: '/tasks',
-        data: taskToAdd
-    }).then(function(response) {
-        console.log('back from POST', response);
-        getTasks();
-    }).catch(function(err) {
-        console.log(err);
-        alert('error adding task');
-    })
+    clearInputs();
+    if (verifyInputs(taskToAdd)) {
+        $.ajax({
+            method: 'POST',
+            url: '/tasks',
+            data: taskToAdd
+        }).then(function(response) {
+            console.log('back from POST', response);
+            getTasks();
+        }).catch(function(err) {
+            console.log(err);
+            alert('error adding task');
+        })
+    } else {
+        alert('Please enter a valid title and due date');
+    }
 }
 
 // GET
 function getTasks() {
-    let sortBy = $('#sortByIn').val();
     $.ajax({
         method: 'GET',
         url: `/tasks?sortBy=${sortBy}`
@@ -60,12 +70,13 @@ function getTasks() {
 
 // PUT COMPLETE
 function completeTask() {
-    let parEl = $(this).closest('tr');
+    let parEl = $(this).closest('.accordion-item');
     let completedTask = {
         id: parEl.data('id'),
     }
-    console.log();
-    if (parEl.find('.completedTask').text() == 'false') {
+    selectedAccordion = completedTask.id;
+    console.log('in completedTask', completedTask);
+    if (parEl.find('.completedTask').text() == 'Not Complete') {
         let timeNow = new Date();
         completedTask.time_completed = `${timeNow.getFullYear()}-${timeNow.getMonth()}-${timeNow.getDate()} ${timeNow.getHours()}:${timeNow.getMinutes()}:${timeNow.getSeconds()}`;
     } else {
@@ -87,6 +98,7 @@ function completeTask() {
 
 // PUT EDIT TASK
 function editTask() {
+    selectedAccordion = $(this).data('id');
     let updatedTask = {
         id: $(this).data('id'),
         title: $('#editTitle').val(),
@@ -95,17 +107,21 @@ function editTask() {
         priority: $('#editPriority').val()
     };
     console.log('in editTask', updatedTask);
-    $.ajax({
-        method: 'PUT',
-        url: `/tasks/update`,
-        data: updatedTask
-    }).then(function(response) {
-        console.log('back from PUT', response);
-        getTasks();
-    }).catch(function(err) {
-        console.log(err);
-        alert('error updating task');
-    })
+    if (verifyInputs(updatedTask)) {
+        $.ajax({
+            method: 'PUT',
+            url: `/tasks/update`,
+            data: updatedTask
+        }).then(function(response) {
+            console.log('back from PUT', response);
+            getTasks();
+        }).catch(function(err) {
+            console.log(err);
+            alert('error updating task');
+        })
+    } else {
+        alert('Please enter a valid title and due date');
+    }   
 }
 
 // DELETE
@@ -138,32 +154,60 @@ function displayTasks(arrayToDisplay) {
         arrayToDisplay[i].due_date = formatDueDateForDom(arrayToDisplay[i].due_date);
         // format time_completed
         arrayToDisplay[i].time_completed = formatTimeCompleted(arrayToDisplay[i].time_completed);
+        // check to see if the accordion should be collapsed
+        let thisCollapsed = checkCollapsed(arrayToDisplay[i].id)
         el.append(`
-            <tr data-id="${arrayToDisplay[i].id}">
-                <td class="titleTask">${arrayToDisplay[i].title}</td>
-                <td class="descriptionTask">${arrayToDisplay[i].description}</td>
-                <td class="due_dateTask">${arrayToDisplay[i].due_date.slice(0,10)}</td>
-                <td class="priorityTask">${arrayToDisplay[i].priority}</td>
-                <td class="completedTask">${arrayToDisplay[i].completed}</td>
-                <td>${arrayToDisplay[i].time_completed}</td>
-                <td><button class="deleteButton" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button></td>
-                <td><button class="completeButton">${checkComplete(arrayToDisplay[i].completed)}</button></td>
-                <td><button class="editButton" data-bs-toggle="modal" data-bs-target="#editModal">Edit</button></td>
-            </tr>
+            <div class="accordion-item" data-id="${arrayToDisplay[i].id}">
+                <h2 class="accordion-header" id="heading${i}">
+                    <button class="accordion-button ${thisCollapsed[0]} titleTask" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${i}">
+                        ${arrayToDisplay[i].title}
+                    </button>
+                </h2>
+                <div id="collapse${i}" class="accordion-collapse collapse ${thisCollapsed[1]}" data-bs-parent="#tasksOut">
+                    <div class="accordion-body container">
+                        <div class="row">
+                            <div class="col-6">
+                                <label><strong><u>Description</u></strong><div class="descriptionTask">${arrayToDisplay[i].description}</div></label>
+                            </div>  
+                            <div class="col-6">
+                                <label><strong><u>Due Date</u></strong><div class="due_dateTask">${arrayToDisplay[i].due_date.slice(0,10)}</div></label>
+                                <br>
+                                <label><strong><u>Priority</u></strong><div class="priorityTask">${arrayToDisplay[i].priority}</div></label>
+                                <br>
+                                <label><strong><u>Time Completed</u></strong><div class="completedTask">${arrayToDisplay[i].time_completed}</div></label>
+                            </div>  
+                        </div>
+                        <div class="row pt-3">
+                            <div class="btn-group" role="group">
+                                <button class="deleteButton btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button>
+                                <button class="completeButton btn btn-outline-success">${checkComplete(arrayToDisplay[i].completed)}</button>
+                                <button class="editButton btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editModal">Edit</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         `)
     }
 }
 
+function checkCollapsed(idToCheck) {
+    if(selectedAccordion === idToCheck) {
+        return ['','show'];
+    }
+    return ['collapsed',''];
+}
+
 function formatTimeCompleted(timeIn) {
     if (timeIn == null) {
-        return '';
+        return 'Not Complete';
     }
     let dateObj = new Date(timeIn);
 
     let formattedMin = (dateObj.getMinutes() < 10 ? '0' : '') + dateObj.getMinutes();
 
     let formattedDate = `${dateObj.getMonth()}-${dateObj.getDate()}-${dateObj.getFullYear()}
-        ${dateObj.getHours()}:${formattedMin}`;
+        @ ${dateObj.getHours()}:${formattedMin}`;
     return formattedDate;
 }
 
@@ -182,7 +226,7 @@ function formatDueDateForEdit(timeIn) {
 
 function confirmDelete() {
     // gather task info from clicked button
-    let parEl = $(this).closest('tr');
+    let parEl = $(this).closest('.accordion-item');
     let taskToDelete = {
         id: parEl.data('id'),
         title: parEl.find('.titleTask').text()
@@ -203,10 +247,10 @@ function confirmDelete() {
 
 function editWindow() {
     // gather title, description, due_date, and priority
-    let parEl = $(this).closest('tr');
+    let parEl = $(this).closest('.accordion-item');
     let taskData = {
         id: parEl.data('id'),
-        title: parEl.find('.titleTask').text(),
+        title: parEl.find('.titleTask').text().trim(),
         description: parEl.find('.descriptionTask').text(),
         due_date: formatDueDateForEdit(parEl.find('.due_dateTask').text()),
         priority: parEl.find('.priorityTask').text()
@@ -216,43 +260,35 @@ function editWindow() {
     let el = $('#editModalBody');
     el.empty();
     el.append(`
-        <table>
-            <tr>
-                <th>Title</th>
-            </tr>
-            <tr>
-                <td><input id="editTitle" type="text" value="${taskData.title}"></td>
-            </tr>
-            <tr>
-                <th>Description</th>
-            </tr>
-            <tr>
-                <td><input id="editDescription" type="text" value="${taskData.description}"></td>
-            </tr>
-            <tr>
-                <th>Due Date</th>
-            </tr>
-            <tr>
-                <td><input type="date" id="editDate" value="${taskData.due_date}"></td>
-            </tr>
-            <tr>
-                <th>Priority</th>
-            </tr>
-            <tr>
-                <td><select id="editPriority">
-                    <option value="1" ${checkSelected(taskData.priority,'low')}>low</option>
-                    <option value="2" ${checkSelected(taskData.priority,'medium')}>medium</option>
-                    <option value="3" ${checkSelected(taskData.priority,'high')}>high</option>
-                </select></td>
-            </tr>
-        </table> 
+        <div class="container">
+            <div class="row">
+                <label><strong>Name</strong><input id="editTitle" type="text" class="w-100" value="${taskData.title}"></label>
+            </div>
+            <div class="row">
+                <label><strong>Description</strong><textarea id="editDescription" class="w-100" type="text">${taskData.description}</textarea></label>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <label><strong>Due Date</strong><input type="date" id="editDate" value="${taskData.due_date}"></label>
+                </div>
+                <div class="col">
+                    <label><strong>Priority</strong>
+                        <select id="editPriority" class="w-100">
+                            <option value="1" ${checkSelected(taskData.priority,'low')}>low</option>
+                            <option value="2" ${checkSelected(taskData.priority,'medium')}>medium</option>
+                            <option value="3" ${checkSelected(taskData.priority,'high')}>high</option>
+                        </select>
+                    </label>
+                </div>
+            </div>
+        </div>      
     `);
     // create cancel and confirm buttons
     el = $('#editModalFooter');
     el.empty();
     el.append(`
-        <button data-bs-dismiss="modal">Cancel</button>
-        <button data-id="${taskData.id}" class="editButton" data-bs-dismiss="modal">Update</button>
+        <button class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-primary" data-id="${taskData.id}" class="editButton" data-bs-dismiss="modal">Update</button>
     `);
 }
 
@@ -281,4 +317,25 @@ function checkComplete(completedIn) {
         return 'Complete';
     }
     return 'Incomplete';
+}
+
+function clearInputs() {
+    $('#titleIn').val('');
+    $('#descriptionIn').val('');
+    $('#due_dateIn').val('');
+    $('#priorityIn').val('1');
+}
+
+function verifyInputs(inputsToVerify) {
+    if (inputsToVerify.title === '' || inputsToVerify.due_date === '') {
+        return false;
+    }
+    return true;
+}
+
+function setSortBy() {
+    sortBy = $(this).data('sort');
+    selectedAccordion = 0;
+    console.log('in setSortBy', sortBy);
+    getTasks();
 }
