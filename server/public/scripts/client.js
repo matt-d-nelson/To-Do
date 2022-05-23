@@ -162,10 +162,9 @@ function displayTasks(arrayToDisplay) {
             <div class="${backgroundClass}">
                 <h2 class="accordion-header" id="heading${i}">
                     <button class="accordion-button ${thisCollapsed[0]} ${backgroundClass} titleTask" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${i}">
-                        ${arrayToDisplay[i].title}
+                        <strong>${arrayToDisplay[i].title}</strong>
                     </button>
                 </h2>
-                
                 <div id="collapse${i}" class="accordion-collapse collapse  ${thisCollapsed[1]}" data-bs-parent="#tasksOut">
                     <div class="accordion-body container">
                         <div class="row">

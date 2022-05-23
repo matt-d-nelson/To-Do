@@ -11,7 +11,7 @@ CREATE TABLE tasks (
 
 DROP TABLE tasks;
 
-INSERT INTO tasks (title, description, due_date, priority) VALUES ('get groceries', 'apples, oranges, tuna, bread, starfruit', '2022-05-23', 2);
+INSERT INTO tasks (title, description, due_date, priority) VALUES ('Pick Up Groceries', 'apples, oranges, tuna, bread, starfruit', '2022-05-23', 2);
 
 SELECT * FROM tasks ORDER BY id ASC;
 

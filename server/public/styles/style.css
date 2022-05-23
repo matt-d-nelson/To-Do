@@ -1,23 +1,28 @@
 :root {
     --high1: rgb(170, 0, 0, 0.8);
-    --high2: rgb(170, 0, 0, 0.6);
-    --high3: rgba(170, 0, 0, 0.4);
+    --high2: rgb(170, 0, 0, 0.5);
+    --high3: rgba(170, 0, 0, 0.2);
 
     --medium1: rgb(187, 99, 0, 0.8);
-    --medium2: rgb(187, 99, 0, 0.6);
-    --medium3: rgb(187, 99, 0, 0.4);
+    --medium2: rgb(187, 99, 0, 0.5);
+    --medium3: rgb(187, 99, 0, 0.2);
 
     --low1: rgb(227, 207, 0, 0.8);
-    --low2: rgb(227, 207, 0, 0.6);
-    --low3: rgb(227, 207, 0, 0.4);
+    --low2: rgb(227, 207, 0, 0.5);
+    --low3: rgb(227, 207, 0, 0.2);
 
-    --complete: rgba(185, 255, 159, 0.8);
+    --complete: rgba(160, 215, 140, 0.8);
+
+    --lightGray: rgb(240, 240, 240);
+    --darkGray: rgb(47, 47, 47);
 }
 
 body {
- background-color: rgb(240, 240, 240);
- color: rgb(89, 89, 89);
+ background-color: var(--lightGray);
+ color: var(--darkGray);
 }
+
+/*-----------------Accordion Adjustments-----------------*/
 
 .accordion-button:not(.collapsed) {
     background-color: inherit;
@@ -26,6 +31,20 @@ body {
 }
 .accordion-button:not(.collapsed)::after {
     filter: brightness(0%);
+}
+.accordion-button:focus {
+    box-shadow: inherit;
+}
+
+/*-----------------Modal Adjustments-----------------*/
+.modal-header {
+    background-color: var(--lightGray);
+    color: inherit;
+}
+
+.modal-footer {
+    background-color: var(--lightGray);
+    color: inherit;
 }
 
 /*-----------------Priority Classes-----------------*/
