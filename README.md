@@ -3,7 +3,7 @@
 
 To-Do
 ======
-To-Do is a management app that organizes and tracks tasks. Tasks are color coded based on their priority and their saturation increases in correlation with the remaining time before their due date.
+To-Do is a management app that organizes and tracks tasks. Tasks are color coded based on their priority and their saturation increases in correlation with the time remaining before their due date.
 
 ![ToDoGif](https://user-images.githubusercontent.com/98720000/169928048-250669be-8be7-4b70-bfb8-4d82e5724f50.gif)
 
