@@ -8,27 +8,33 @@ const router = express.Router();
 // POST 
 router.post('/', (req, res) => {
     console.log('/tasks POST', req.body);
+    // store data from request body
     let taskData = [
         req.body.title,
         req.body.description,
         req.body.due_date,
         req.body.priority
     ];
+    // create query string
     let queryString = `INSERT INTO tasks (title, description, due_date, priority) VALUES ($1, $2, $3, $4);`;
-    pool.query(queryString,taskData).then((result) => {
+    // send query and data to SQL to add task to the database
+    pool.query(queryString, taskData).then((result) => {
         res.sendStatus(201);
     }).catch((err) => {
         console.log(err);
         res.sendStatus(500);
     })
-    
 })
 
 // GET
 router.get('/', (req, res) => {
     console.log('/tasks GET');
+    // store the sortBy data
     let sortBy = req.query.sortBy;
-    let queryString = format(`SELECT * FROM tasks ORDER BY %I`,sortBy);
+    // add it into the query string as an identifier
+    let queryString = format(`SELECT * FROM tasks ORDER BY %I`, sortBy);
+    // additional concatenation to make oldest tasks display first when 'Age' is selected
+    // to make highest priority tasks display first
     if (sortBy === 'id') {
         queryString += ' ASC;'
     } else if (sortBy === 'priority') {
@@ -37,6 +43,7 @@ router.get('/', (req, res) => {
         queryString += ';'
     }
     console.log(queryString);
+    // send query to SQL and send that response to the client
     pool.query(queryString).then((result) => {
         res.send(result.rows);
     }).catch((err) => {
@@ -46,16 +53,19 @@ router.get('/', (req, res) => {
 })
 
 // PUT COMPLETE TASK
-router.put('/', (req,res) => {
+router.put('/', (req, res) => {
     console.log('/tasks PUT', req.body);
-    let taskData = [req.body.time_completed,req.body.id];
+    // store request body data
+    let taskData = [req.body.time_completed, req.body.id];
     let queryString = `UPDATE tasks SET completed = NOT completed, time_completed = $1 WHERE id = $2;`;
     // set time_completed back to null if 'incompleting' the task
     if (taskData[0] == '') {
-        queryString =`UPDATE tasks SET completed = NOT completed, time_completed = NULL WHERE id = $1;`;
+        queryString = `UPDATE tasks SET completed = NOT completed, time_completed = NULL WHERE id = $1;`;
+        // remove time_completed from query array
         taskData.shift();
     }
-    pool.query(queryString,taskData).then((result) => {
+    // send query to SQL to update a task as complete in the database
+    pool.query(queryString, taskData).then((result) => {
         res.sendStatus(200);
     }).catch((err) => {
         console.log(err);
@@ -64,8 +74,9 @@ router.put('/', (req,res) => {
 })
 
 // PUT UPDATE TASK
-router.put('/update', (req,res) => {
+router.put('/update', (req, res) => {
     console.log('/tasks/update PUT', req.body);
+    // store req body data for updated task
     let updatedData = [
         req.body.title,
         req.body.description,
@@ -73,8 +84,10 @@ router.put('/update', (req,res) => {
         req.body.priority,
         req.body.id
     ];
+    // query string to set coresponding values from updateData
     let queryString = `UPDATE tasks SET title = $1, description = $2, due_date = $3, priority = $4 WHERE id = $5;`;
-    pool.query(queryString,updatedData).then((result) => {
+    // send query to update task in the database
+    pool.query(queryString, updatedData).then((result) => {
         res.sendStatus(200);
     }).catch((err) => {
         console.log(err);
@@ -85,9 +98,11 @@ router.put('/update', (req,res) => {
 // DELETE
 router.delete('/', (req, res) => {
     console.log('/tasks DELETE');
+    // store id from request query 
     let taskId = [req.query.id];
     let queryString = `DELETE FROM tasks WHERE id=$1;`
-    pool.query(queryString,taskId).then((result) => {
+    // send query to SQL to delete coresponding task in the database
+    pool.query(queryString, taskId).then((result) => {
         res.sendStatus(200);
     }).catch((err) => {
         console.log(err);
