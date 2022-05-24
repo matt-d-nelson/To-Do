@@ -1,3 +1,4 @@
+/*-----------------Globals-----------------*/
 :root {
     --high1: rgb(170, 0, 0, 0.8);
     --high2: rgb(170, 0, 0, 0.5);
@@ -18,8 +19,8 @@
 }
 
 body {
- background-color: var(--lightGray);
- color: var(--darkGray);
+    background-color: var(--lightGray);
+    color: var(--darkGray);
 }
 
 /*-----------------Accordion Adjustments-----------------*/
@@ -29,9 +30,11 @@ body {
     transform: none;
     color: inherit;
 }
+
 .accordion-button:not(.collapsed)::after {
     filter: brightness(0%);
 }
+
 .accordion-button:focus {
     box-shadow: inherit;
 }
@@ -52,9 +55,11 @@ body {
 .high1 {
     background-color: var(--high1);
 }
+
 .high2 {
     background-color: var(--high2);
 }
+
 .high3 {
     background-color: var(--high3);
 }
@@ -62,9 +67,11 @@ body {
 .medium1 {
     background-color: var(--medium1);
 }
+
 .medium2 {
     background-color: var(--medium2);
 }
+
 .medium3 {
     background-color: var(--medium3);
 }
@@ -72,9 +79,11 @@ body {
 .low1 {
     background-color: var(--low1);
 }
+
 .low2 {
     background-color: var(--low2);
 }
+
 .low3 {
     background-color: var(--low3);
 }
