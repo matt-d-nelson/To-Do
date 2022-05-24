@@ -29,7 +29,7 @@ router.post('/', (req, res) => {
 // GET
 router.get('/', (req, res) => {
     console.log('/tasks GET');
-    // store the sortBy data
+    // store the sortBy data in sortBy
     let sortBy = req.query.sortBy;
     // add it into the query string as an identifier
     let queryString = format(`SELECT * FROM tasks ORDER BY %I`, sortBy);

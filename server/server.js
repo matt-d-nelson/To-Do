@@ -8,8 +8,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('server/public'));
 app.use('/tasks', tasks)
 // globals
-const port = process.env.port || 5000;
+const PORT = process.env.port || 5000;
 //listen on port
-app.listen(port, () => {
-    console.log('server up:', port);
+app.listen(PORT, () => {
+    console.log('server up:', PORT);
 });
