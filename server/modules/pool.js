@@ -18,7 +18,7 @@ const pool = new pg.Pool({
 //   ssl: true,
 // });
 
-const client = new Client({
+const client = new pg.Client({
   connectionString: process.env.DATABASE_URL,
   ssl: {
     rejectUnauthorized: false,
