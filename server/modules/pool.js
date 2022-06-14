@@ -9,13 +9,21 @@ const pool = new pg.Pool({
   password: "0c748e5168dc0dde1b14167fa5f1160fc2a16b781b18e856e89956eb28b54c3a",
 });
 
-const client = new pg.Client({
-  user: "hyyejfoznudqye",
-  password: "0c748e5168dc0dde1b14167fa5f1160fc2a16b781b18e856e89956eb28b54c3a",
-  database: "d3fgsipjtlodos",
-  port: 5432,
-  host: "localhost",
-  ssl: true,
+// const client = new pg.Client({
+//   user: "hyyejfoznudqye",
+//   password: "0c748e5168dc0dde1b14167fa5f1160fc2a16b781b18e856e89956eb28b54c3a",
+//   database: "d3fgsipjtlodos",
+//   port: 5432,
+//   host: "localhost",
+//   ssl: true,
+// });
+
+const client = new Client({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
+
 // exports
 module.exports = client;
