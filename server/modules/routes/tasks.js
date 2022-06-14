@@ -5,7 +5,8 @@ const format = require("pg-format");
 
 const router = express.Router();
 
-//pool.connect();
+pool.connect();
+
 // POST
 router.post("/", (req, res) => {
   console.log("/tasks POST", req.body);
@@ -27,6 +28,9 @@ router.post("/", (req, res) => {
     .catch((err) => {
       console.log(err);
       res.sendStatus(500);
+    })
+    .then(() => {
+      pool.end();
     });
 });
 
@@ -56,6 +60,9 @@ router.get("/", (req, res) => {
     .catch((err) => {
       console.log(err);
       res.sendStatus(500);
+    })
+    .then(() => {
+      pool.end();
     });
 });
 
@@ -80,6 +87,9 @@ router.put("/", (req, res) => {
     .catch((err) => {
       console.log(err);
       res.sendStatus(500);
+    })
+    .then(() => {
+      pool.end();
     });
 });
 
@@ -105,6 +115,9 @@ router.put("/update", (req, res) => {
     .catch((err) => {
       console.log(err);
       res.sendStatus(500);
+    })
+    .then(() => {
+      pool.end();
     });
 });
 
@@ -123,6 +136,9 @@ router.delete("/", (req, res) => {
     .catch((err) => {
       console.log(err);
       res.sendStatus(500);
+    })
+    .then(() => {
+      pool.end();
     });
 });
 
