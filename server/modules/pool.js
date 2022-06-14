@@ -7,6 +7,7 @@ const pool = new pg.Pool({
   port: 5432,
   user: "hyyejfoznudqye",
   password: "0c748e5168dc0dde1b14167fa5f1160fc2a16b781b18e856e89956eb28b54c3a",
+  ssl: true,
 });
 
 // const client = new pg.Client({
@@ -26,4 +27,4 @@ const client = new pg.Client({
 });
 
 // exports
-module.exports = client;
+module.exports = pool;
