@@ -8,5 +8,14 @@ const pool = new pg.Pool({
   user: "hyyejfoznudqye",
   password: "0c748e5168dc0dde1b14167fa5f1160fc2a16b781b18e856e89956eb28b54c3a",
 });
+
+const client = new pg.Client({
+  user: "hyyejfoznudqye",
+  password: "0c748e5168dc0dde1b14167fa5f1160fc2a16b781b18e856e89956eb28b54c3a",
+  database: "d3fgsipjtlodos",
+  port: 5432,
+  host: "ec2-52-204-195-41.compute-1.amazonaws.com",
+  ssl: true,
+});
 // exports
-module.exports = pool;
+module.exports = client;
