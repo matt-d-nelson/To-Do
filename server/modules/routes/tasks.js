@@ -5,7 +5,7 @@ const format = require("pg-format");
 
 const router = express.Router();
 
-pool.connect();
+//pool.connect();
 // POST
 router.post("/", (req, res) => {
   console.log("/tasks POST", req.body);
