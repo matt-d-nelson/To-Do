@@ -7,6 +7,10 @@ To-Do is a management app that organizes and tracks tasks. Tasks are color coded
 
 ![ToDoGif](https://user-images.githubusercontent.com/98720000/169928048-250669be-8be7-4b70-bfb8-4d82e5724f50.gif)
 
+Visit the hosted app:
+------
+https://immense-savannah-26386.herokuapp.com/
+
 ## Built With
 
 - JavaScript
